@@ -5,11 +5,12 @@ const db = require('./lib/connect_db');
 const init = () => {
 
     console.log(`
--------------------------------------------
---                                       --
---    Welcome to the Employee Tracker    -- 
---                                       --
--------------------------------------------
+-----------------------------------------------------
+--                                                 --
+--                 Welcome to the                  --
+--           Employee Management System            --
+--                                                 --
+-----------------------------------------------------
     `);
     
     askTodo();
@@ -88,8 +89,7 @@ const addDept = () => {
             });
 
             askTodo();
-        })
-
+        });
 };
 
 const addRole = () => {
@@ -112,7 +112,15 @@ const updateEmp = () => {
 
 const exitApp = () => {
 
-    console.log('Thanks for using the Employee Management System.');
+    console.log(`
+    -----------------------------------------------------
+    --                                                 --
+    --              Thanks for using the               --
+    --           Employee Management System            --
+    --                                                 --
+    -----------------------------------------------------
+        `);
+
     process.exit();
 }
 

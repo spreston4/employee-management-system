@@ -26,38 +26,44 @@ const askTodo = () => {
                 case 'View all Departments':
 
                     db.query('SELECT * FROM department', (err, res) => err ? console.error(err) : console.log(res));
+                    askTodo();
                     break;
 
                 case 'View all Roles':
 
                     db.query('SELECT * FROM roles', (err, res) => err ? console.error(err) : console.log(res));
+                    askTodo();
                     break;
 
                 case 'View all Employees':
 
                     db.query('SELECT * FROM employee', (err, res) => err ? console.error(err) : console.log(res));
+                    askTodo();
                     break;
 
                 case 'Add a Department':
 
                     addDept();
-                    console.log('Add Department');
                     break;
 
                 case 'Add a Role':
-                    console.log('Add Role');
+                    
+                    addRole();
                     break;
 
                 case 'Add an Employee':
-                    console.log('Add Employee');
+
+                    addEmp();
                     break;
 
                 case 'Update an Employee Role':
-                    console.log('Update Employee Roll');
+
+                    updateEmp();
                     break;
 
                 case 'Exit Application':
-                    console.log('Exit');
+
+                    exitApp();
                     break;
             }
         })
@@ -85,5 +91,29 @@ const addDept = () => {
         })
 
 };
+
+const addRole = () => {
+
+    console.log('Add role');
+    askTodo();
+};
+
+const addEmp = () => {
+
+    console.log('Add employee');
+    askTodo();
+};
+
+const updateEmp = () => {
+
+    console.log('Update employee');
+    askTodo();
+}
+
+const exitApp = () => {
+
+    console.log('Thanks for using the Employee Management System.');
+    process.exit();
+}
 
 init();

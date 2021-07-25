@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const questions = require('./lib/questions');
+const db = require('./lib/connect_db');
 
 const init = () => {
 

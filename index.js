@@ -39,6 +39,8 @@ const askTodo = () => {
                     break;
 
                 case 'Add a Department':
+
+                    addDept();
                     console.log('Add Department');
                     break;
 
@@ -63,6 +65,25 @@ const askTodo = () => {
         .catch(err => {
             if (err) throw err;
         });
+};
+
+const addDept = () => {
+
+    inquirer
+        .prompt(questions.addDeptQuestions)
+        .then((ans) => {
+
+            // console.log(ans.depName);
+            db.query(`INSERT INTO department (name) VALUES ("${ans.depName}");`, (err, results) => {
+
+                if(err){
+                    console.error(err);
+                }
+            });
+
+            askTodo();
+        })
+
 };
 
 init();

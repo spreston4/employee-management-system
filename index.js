@@ -2,8 +2,15 @@ const inquirer = require('inquirer');
 const questions = require('./lib/questions');
 
 const init = () => {
+
+    console.log(`
+-------------------------------------------
+--                                       --
+--    Welcome to the Employee Tracker    -- 
+--                                       --
+-------------------------------------------
+    `);
     
-    console.log('Welcome to the Employee Tracker \n-----------------------------------');
     askTodo();
 };
 

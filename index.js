@@ -24,15 +24,18 @@ const askTodo = () => {
             switch (ans.nextChoice) {
 
                 case 'View all Departments':
-                    console.log('Department List');
+
+                    db.query('SELECT * FROM department', (err, res) => err ? console.error(err) : console.log(res));
                     break;
 
                 case 'View all Roles':
-                    console.log('View Roles');
+
+                    db.query('SELECT * FROM roles', (err, res) => err ? console.error(err) : console.log(res));
                     break;
 
                 case 'View all Employees':
-                    console.log('View Employees');
+
+                    db.query('SELECT * FROM employee', (err, res) => err ? console.error(err) : console.log(res));
                     break;
 
                 case 'Add a Department':

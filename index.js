@@ -73,7 +73,7 @@ const askTodo = () => {
 
 const viewAll = (table) => {
 
-    db.query(`SELECT * FROM ${table}`, (err, res) => {
+    db.query(`SELECT * FROM ??`, table, (err, res) => {
 
         if (err) {
             console.error(err)

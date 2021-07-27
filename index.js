@@ -26,20 +26,17 @@ const askTodo = () => {
 
                 case 'View all Departments':
 
-                    db.query('SELECT * FROM department', (err, res) => err ? console.error(err) : console.log(res));
-                    askTodo();
+                    viewAll('department');
                     break;
 
                 case 'View all Roles':
 
-                    db.query('SELECT * FROM roles', (err, res) => err ? console.error(err) : console.log(res));
-                    askTodo();
+                    viewAll('roles');
                     break;
 
                 case 'View all Employees':
 
-                    db.query('SELECT * FROM employee', (err, res) => err ? console.error(err) : console.log(res));
-                    askTodo();
+                    viewAll('employee');
                     break;
 
                 case 'Add a Department':
@@ -72,6 +69,21 @@ const askTodo = () => {
         .catch(err => {
             if (err) throw err;
         });
+};
+
+const viewAll = (table) => {
+
+    db.query(`SELECT * FROM ${table}`, (err, res) => {
+
+        if (err) {
+            console.error(err)
+        } else {
+            console.log('\n')
+            console.table(res)
+            console.log('\n')
+            askTodo();
+        } 
+    });
 };
 
 const addDept = () => {

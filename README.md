@@ -42,8 +42,11 @@ npm install
 * [Video demo of the Employee Management System](https://drive.google.com/file/d/1mt47EnnMJoJV0RsauiJWek-e3TM-rV29/view)
 
 ![Welcome](./assets/1.PNG)
+
 ![Departments](./assets/2.PNG)
+
 ![Roles](./assets/3.PNG)
+
 ![Employees](./assets/4.PNG)
 
 

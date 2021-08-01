@@ -75,13 +75,13 @@ const askTodo = () => {
         });
 };
 
-
 // viewAllDepts will display all current departments 
 const viewAllDepts = async () => {
 
     const res = await query(`
     SELECT id, name AS department 
-    FROM department;`)
+    FROM department;
+    `)
 
     displayTable(res);
     askTodo();
@@ -123,6 +123,7 @@ const addDept = async () => {
     await query(`
     INSERT INTO department (name) 
     VALUES (?)`, newDept.depName.trim());
+    
     await viewAllDepts();
 };
 

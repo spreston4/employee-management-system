@@ -1,6 +1,9 @@
 const inquirer = require('inquirer');
+const util = require('util');
 const questions = require('./lib/questions');
 const db = require('./lib/connect_db');
+const query = util.promisify(db.query).bind(db);
+
 
 const init = () => {
 
@@ -26,17 +29,20 @@ const askTodo = () => {
 
                 case 'View all Departments':
 
-                    viewAll('department');
+                    viewAllDepts();
+                    // viewAll('department');
                     break;
 
                 case 'View all Roles':
 
-                    viewAll('roles');
+                    viewAllRoles();
+                    // viewAll('roles');
                     break;
 
                 case 'View all Employees':
 
-                    viewAll('employee');
+                    viewAllEmps();
+                    // viewAll('employee');
                     break;
 
                 case 'Add a Department':
@@ -71,19 +77,62 @@ const askTodo = () => {
         });
 };
 
-const viewAll = (table) => {
+// const viewAll = (table) => {
 
-    db.query(`SELECT * FROM ??`, table, (err, res) => {
+//     db.query(`SELECT * FROM ??`, table, (err, res) => {
 
-        if (err) {
-            console.error(err)
-        } else {
-            console.log('\n')
-            console.table(res)
-            console.log('\n')
-            askTodo();
-        } 
-    });
+//         if (err) {
+//             console.error(err)
+//         } else {
+//             console.log('\n')
+//             console.table(res)
+//             console.log('\n')
+//             askTodo();
+//         } 
+//     });
+// };
+
+const viewAllDepts = async () => {
+
+    const res = await query(`
+    SELECT id, name AS department 
+
+    FROM department;`)
+
+    displayTable(res);
+    askTodo();
+};
+
+const viewAllRoles = async () => {
+
+    const res = await query (`
+    SELECT roles.id, roles.title, department.name AS department, roles.salary 
+
+    FROM roles 
+
+    JOIN department ON roles.department_id = department.id;
+    `)
+    
+    displayTable(res);
+    askTodo();
+};
+
+const viewAllEmps = async () => {
+
+    const res = await query (`
+    SELECT employee.id, CONCAT(employee.first_name, " ", employee.last_name) AS employee, roles.title AS role, roles.salary AS salary, department.name AS department, CONCAT(mang.first_name, " ", mang.last_name) AS manager
+
+    FROM employee
+
+    JOIN roles on employee.role_id = roles.id
+
+    JOIN department ON roles.department_id = department.id
+
+    JOIN employee mang ON mang.id = employee.manager_id;
+    `)
+
+    displayTable(res);
+    askTodo();
 };
 
 const addDept = () => {
@@ -125,15 +174,21 @@ const updateEmp = () => {
 const exitApp = () => {
 
     console.log(`
-    -----------------------------------------------------
-    --                                                 --
-    --              Thanks for using the               --
-    --           Employee Management System            --
-    --                                                 --
-    -----------------------------------------------------
+-----------------------------------------------------
+--                                                 --
+--              Thanks for using the               --
+--           Employee Management System            --
+--                                                 --
+-----------------------------------------------------
         `);
 
     process.exit();
 }
+
+const displayTable = (data) => {
+    console.log('\n');
+    console.table(data);
+    console.log('\n');
+};
 
 init();

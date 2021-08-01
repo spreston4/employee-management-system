@@ -2,8 +2,6 @@ const inquirer = require('inquirer');
 const util = require('util');
 const questions = require('./lib/questions');
 const db = require('./lib/connect_db');
-const { totalmem } = require('os');
-const { connect } = require('./lib/connect_db');
 const query = util.promisify(db.query).bind(db);
 
 // init begins the application

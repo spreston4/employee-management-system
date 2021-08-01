@@ -3,9 +3,10 @@ const util = require('util');
 const questions = require('./lib/questions');
 const db = require('./lib/connect_db');
 const { totalmem } = require('os');
+const { connect } = require('./lib/connect_db');
 const query = util.promisify(db.query).bind(db);
 
-
+// init begins the application
 const init = () => {
 
     console.log(`
@@ -20,6 +21,7 @@ const init = () => {
     askTodo();
 };
 
+// askTodo will ask the suer what they want to do and call the appropriate functions
 const askTodo = () => {
 
     inquirer
@@ -76,6 +78,7 @@ const askTodo = () => {
 };
 
 
+// viewAllDepts will display all current departments 
 const viewAllDepts = async () => {
 
     const res = await query(`
@@ -86,6 +89,7 @@ const viewAllDepts = async () => {
     askTodo();
 };
 
+// viewAllRoles will display all current roles
 const viewAllRoles = async () => {
 
     const res = await query (`
@@ -98,6 +102,7 @@ const viewAllRoles = async () => {
     askTodo();
 };
 
+// viewAllEmps will display all current employees
 const viewAllEmps = async () => {
 
     const res = await query (`
@@ -112,6 +117,7 @@ const viewAllEmps = async () => {
     askTodo();
 };
 
+// addDept will allow the user to add a new department
 const addDept = async () => {
 
     const newDept = await inquirer.prompt(questions.addDeptQuestions);
@@ -120,31 +126,42 @@ const addDept = async () => {
     await viewAllDepts();
 };
 
-const addRole = async() => {
+// addRole will allow the user to add a new role
+const addRole = async () => {
 
+    // Populate choices for role questions
     await getDepts();
 
     const newRole = await inquirer.prompt(questions.addRoleQuestions)
 
+    // Determine department id
     const deptQuery = await query(`SELECT id from department WHERE name = (?)`, newRole.roleDept);
     const deptId = deptQuery[0].id;
 
     await query(`INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)`,[newRole.roleName, parseInt(newRole.roleSalary), deptId]);
 
     viewAllRoles();
-
-
-    // console.log(newRole);
-    // console.log('Add role');
-    // askTodo();
 };
 
-const addEmp = () => {
+// addEmp will allow the user to add a new employee
+const addEmp = async () => {
 
-    console.log('Add employee');
-    askTodo();
+    // Populate choices for employee questions
+    await getRoles();
+    await getEmps();
+
+    const newEmp = await inquirer.prompt(questions.addEmpQuestions);
+
+    console.log(newEmp);
+
+    // Determine role id
+
+    // Determine manager id
+
+    await askTodo();
 };
 
+// updateEmpt will allow the user to update the role of an existing employee
 const updateEmp = () => {
 
     console.log('Update employee');
@@ -174,11 +191,11 @@ const displayTable = (data) => {
     console.log('\n');
 };
 
-// getRoles will query all available departments, then populate questions.deptArr with results
+// getDepts will query all available departments, then populate questions.deptArr with results
 const getDepts = async () => {
     
-    // Query alll departments
-    const allDepts = await query(`SELECT id, name FROM department;`);
+    // Query all departments
+    const allDepts = await query(`SELECT * FROM department;`);
 
     // Populate deptArr
     for (const depts of allDepts) {
@@ -186,6 +203,33 @@ const getDepts = async () => {
         dept.id = depts.id;
         dept.name = depts.name;
         questions.deptArr.push(dept);
+    };
+};
+
+// getDepts will query all available roles, then populate questions.roleArr with results
+const getRoles = async () => {
+
+    const allRoles = await query(`SELECT * FROM roles;`);
+
+    for (const roless of allRoles) {
+        const role = {};
+        role.id = roless.id;
+        role.name = roless.title;
+        questions.roleArr.push(role);
+        console.log(role);
+    };
+};
+
+// getEmps will query all available employees, then populate questions.empArr with results
+const getEmps = async () => {
+
+    const allEmps  = await query(`SELECT * FROM employee;`);
+    
+    for (const emps of allEmps) {
+        const emp = {};
+        emp.id = emps.id;
+        emp.name = `${emps.first_name} ${emps.last_name}`;
+        questions.empArr.push(emp);
     };
 };
 

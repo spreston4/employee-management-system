@@ -179,12 +179,31 @@ const addEmp = async () => {
 };
 
 // updateEmpt will allow the user to update the role of an existing employee
-const updateEmp = () => {
+const updateEmp = async () => {
 
-    console.log('Update employee');
-    askTodo();
-}
+    await getRoles();
+    await getEmps();
+    
+    const updateEmp = await inquirer.prompt(questions.updateRoleQuestions);
 
+    const roleQuery = await query(`
+    SELECT id from roles 
+    WHERE title = (?);`, updateEmp.roleUpdate);
+    const roleId = roleQuery[0].id;
+
+    const employeeName = updateEmp.empUpdate.split(' ');
+    const employeeQuery = await query(`
+    SELECT id from employee 
+    WHERE first_name = (?) AND last_name = (?);`, [employeeName[0], employeeName[1]]);
+    const employeeId = employeeQuery[0].id;
+
+    await query(`
+    UPDATE employee
+    SET role_id = (?)
+    WHERE id = (?)`, [roleId, employeeId]);
+
+    await viewAllEmps();
+};
 
 // exitApp closes the program
 const exitApp = () => {

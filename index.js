@@ -2,6 +2,7 @@ const inquirer = require('inquirer');
 const util = require('util');
 const questions = require('./lib/questions');
 const db = require('./lib/connect_db');
+const { totalmem } = require('os');
 const query = util.promisify(db.query).bind(db);
 
 
@@ -30,19 +31,16 @@ const askTodo = () => {
                 case 'View all Departments':
 
                     viewAllDepts();
-                    // viewAll('department');
                     break;
 
                 case 'View all Roles':
 
                     viewAllRoles();
-                    // viewAll('roles');
                     break;
 
                 case 'View all Employees':
 
                     viewAllEmps();
-                    // viewAll('employee');
                     break;
 
                 case 'Add a Department':
@@ -82,7 +80,6 @@ const viewAllDepts = async () => {
 
     const res = await query(`
     SELECT id, name AS department 
-
     FROM department;`)
 
     displayTable(res);
@@ -93,9 +90,7 @@ const viewAllRoles = async () => {
 
     const res = await query (`
     SELECT roles.id, roles.title, department.name AS department, roles.salary 
-
     FROM roles 
-
     JOIN department ON roles.department_id = department.id;
     `)
     
@@ -107,13 +102,9 @@ const viewAllEmps = async () => {
 
     const res = await query (`
     SELECT employee.id, CONCAT(employee.first_name, " ", employee.last_name) AS employee, roles.title AS role, roles.salary AS salary, department.name AS department, CONCAT(mang.first_name, " ", mang.last_name) AS manager
-
     FROM employee
-
     JOIN roles on employee.role_id = roles.id
-
     JOIN department ON roles.department_id = department.id
-
     JOIN employee mang ON mang.id = employee.manager_id;
     `)
 
@@ -125,14 +116,27 @@ const addDept = async () => {
 
     const newDept = await inquirer.prompt(questions.addDeptQuestions);
 
-    await query(`INSERT INTO department (name) VALUES (?)`, newDept.depName);
+    await query(`INSERT INTO department (name) VALUES (?)`, newDept.depName.trim());
     await viewAllDepts();
 };
 
-const addRole = () => {
+const addRole = async() => {
 
-    console.log('Add role');
-    askTodo();
+    await getDepts();
+
+    const newRole = await inquirer.prompt(questions.addRoleQuestions)
+
+    const deptQuery = await query(`SELECT id from department WHERE name = (?)`, newRole.roleDept);
+    const deptId = deptQuery[0].id;
+
+    await query(`INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)`,[newRole.roleName, parseInt(newRole.roleSalary), deptId]);
+
+    viewAllRoles();
+
+
+    // console.log(newRole);
+    // console.log('Add role');
+    // askTodo();
 };
 
 const addEmp = () => {
@@ -147,6 +151,8 @@ const updateEmp = () => {
     askTodo();
 }
 
+
+// exitApp closes the program
 const exitApp = () => {
 
     console.log(`
@@ -161,10 +167,27 @@ const exitApp = () => {
     process.exit();
 }
 
+// displayTable standardizes table output formatting
 const displayTable = (data) => {
     console.log('\n');
     console.table(data);
     console.log('\n');
 };
 
+// getRoles will query all available departments, then populate questions.deptArr with results
+const getDepts = async () => {
+    
+    // Query alll departments
+    const allDepts = await query(`SELECT id, name FROM department;`);
+
+    // Populate deptArr
+    for (const depts of allDepts) {
+        const dept = {};
+        dept.id = depts.id;
+        dept.name = depts.name;
+        questions.deptArr.push(dept);
+    };
+};
+
+// Run Program
 init();

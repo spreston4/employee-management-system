@@ -77,20 +77,6 @@ const askTodo = () => {
         });
 };
 
-// const viewAll = (table) => {
-
-//     db.query(`SELECT * FROM ??`, table, (err, res) => {
-
-//         if (err) {
-//             console.error(err)
-//         } else {
-//             console.log('\n')
-//             console.table(res)
-//             console.log('\n')
-//             askTodo();
-//         } 
-//     });
-// };
 
 const viewAllDepts = async () => {
 
@@ -135,22 +121,12 @@ const viewAllEmps = async () => {
     askTodo();
 };
 
-const addDept = () => {
+const addDept = async () => {
 
-    inquirer
-        .prompt(questions.addDeptQuestions)
-        .then((ans) => {
+    const newDept = await inquirer.prompt(questions.addDeptQuestions);
 
-            // console.log(ans.depName);
-            db.query(`INSERT INTO department (name) VALUES ("${ans.depName}");`, (err, results) => {
-
-                if(err){
-                    console.error(err);
-                }
-            });
-
-            askTodo();
-        });
+    await query(`INSERT INTO department (name) VALUES (?)`, newDept.depName);
+    await viewAllDepts();
 };
 
 const addRole = () => {
